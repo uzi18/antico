@@ -1,5 +1,6 @@
 #include "pantherdecoration.hpp"
 #include "titlebar.hpp"
+#include "titlebarbutton.hpp"
 #include "client.hpp"
 
 #include <QHBoxLayout>
@@ -7,6 +8,7 @@
 #include <QLabel>
 #include <QPainter>
 #include <QLinearGradient>
+#include <QDebug>
 
 PantherDecoration::PantherDecoration(Client *c)
     : Decoration(c)
@@ -23,6 +25,10 @@ PantherDecoration::PantherDecoration(Client *c)
                                borderSize().bottom());
     layout->addWidget(_titleBar);
     layout->addStretch();
+
+    addButton(CloseButton);
+    addButton(MinimizeButton);
+    addButton(MaximizeButton);
 
     setLayout(layout);
 }
@@ -51,6 +57,27 @@ void PantherDecoration::paintEvent(QPaintEvent *e)
     painter.drawLine(QPoint(rect().width() - 1, rect().height() - 1), QPoint(rect().width() - 1, 0));
     // top-right to top-left
     painter.drawLine(QPoint(rect().width() - 1, 0), QPoint(0, 0));
+}
+
+void PantherDecoration::addButton(PantherDecoration::ButtonType type)
+{
+    TitleBarButton *button = new TitleBarButton(type, this);
+    button->resize(18, _titleBar->height());
+
+    switch (type)
+    {
+        case CloseButton:
+          button->move(2, 0);
+          break;
+
+        case MinimizeButton:
+            button->move(22, 0);
+            break;
+
+        case MaximizeButton:
+            button->move(42, 0);
+            break;
+    }
 }
 
 void PantherDecoration::buttonClicked(PantherDecoration::ButtonType button)

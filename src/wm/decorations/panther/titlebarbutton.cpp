@@ -9,15 +9,15 @@ TitleBarButton::TitleBarButton(PantherDecoration::ButtonType type, QWidget *pare
     switch (type)
     {
         case PantherDecoration::CloseButton:
-            setPixmap(QPixmap(":/decorations/ubuntu/images/close.png"));
+            setPixmap(QPixmap(":/decorations/panther/images/close-btn.png"));
             setToolTip(trUtf8("Close"));
             break;
         case PantherDecoration::MinimizeButton:
-            setPixmap(QPixmap(":/decorations/ubuntu/images/minimize.png"));
+            setPixmap(QPixmap(":/decorations/panther/images/minimize-btn.png"));
             setToolTip(trUtf8("Minimize"));
             break;
         case PantherDecoration::MaximizeButton:
-            setPixmap(QPixmap(":/decorations/ubuntu/images/maximize.png"));
+            setPixmap(QPixmap(":/decorations/panther/images/maximize-btn.png"));
             setToolTip(trUtf8("Maximize"));
             break;
     }

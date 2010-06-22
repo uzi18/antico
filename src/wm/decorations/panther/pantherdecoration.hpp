@@ -26,6 +26,9 @@ public:
 protected:
     virtual void paintEvent(QPaintEvent *e);
 
+private:
+    void addButton(ButtonType type);
+
 private slots:
     void buttonClicked(PantherDecoration::ButtonType button);
 

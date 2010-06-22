@@ -28,7 +28,7 @@ TitleBar::TitleBar(QWidget *parent):
     _title->setMouseTracking(true);
     _title->setFont(f);
     _title->setPalette(pal);
-    _title->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+    _title->setAlignment(Qt::AlignHCenter);
 
     layout->addWidget(_title);
 }
