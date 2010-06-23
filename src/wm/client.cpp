@@ -34,6 +34,10 @@ Client::Client(Qt::HANDLE winId, QObject *parent)
 
     _decoration = new UbuntuDecoration(this);
 
+    // Allow composited clients
+    if (WindowManager::self()->compositeManagerIsRunning())
+        _decoration->setAttribute(Qt::WA_TranslucentBackground);
+
     XSetWindowBorderWidth(QX11Info::display(), _winId, 0);
     XSetWindowBorderWidth(QX11Info::display(), _decoration->winId(), 0);
     XReparentWindow(QX11Info::display(), _winId, _decoration->winId(),

@@ -126,6 +126,15 @@ void WindowManager::setActiveClient(Client *client)
     }
 }
 
+bool WindowManager::compositeManagerIsRunning() const
+{
+    Atom atom = XInternAtom(QX11Info::display(),
+                            QString("_NET_WM_CM_S%1").arg(QX11Info::appScreen()).toLatin1(),
+                            False);
+
+    return XGetSelectionOwner(QX11Info::display(), atom) != None;
+}
+
 Client *WindowManager::createClient(Qt::HANDLE winId)
 {
     return new Client(winId, this);
