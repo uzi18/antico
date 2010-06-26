@@ -84,26 +84,26 @@ bool Client::x11EventFilter(_XEvent *e)
 {
     switch (e->type)
     {
-    case PropertyNotify:
-	// Name has updated
-	if (e->xproperty.atom == ATOM(WM_NAME) || e->xproperty.atom == ATOM(_NET_WM_NAME))
-	{
-	    updateTitle();
-	    _decoration->setTitle(_title);
-	    return true;
-	}
+        case PropertyNotify:
+            // Name has updated
+            if (e->xproperty.atom == ATOM(WM_NAME) || e->xproperty.atom == ATOM(_NET_WM_NAME))
+            {
+                updateTitle();
+                _decoration->setTitle(_title);
+                return true;
+            }
 
-	break;
+            break;
 
-    case ConfigureNotify:
-	_geometry.setX(e->xconfigure.x);
-	_geometry.setY(e->xconfigure.y);
-	_geometry.setWidth(e->xconfigure.width);
-	_geometry.setHeight(e->xconfigure.height);
+        case ConfigureNotify:
+            _geometry.setX(e->xconfigure.x);
+            _geometry.setY(e->xconfigure.y);
+            _geometry.setWidth(e->xconfigure.width);
+            _geometry.setHeight(e->xconfigure.height);
 
-	qDebug() << __PRETTY_FUNCTION__ << "ConfigureNotify: received geometry" << _geometry;
+            qDebug() << __PRETTY_FUNCTION__ << "ConfigureNotify: received geometry" << _geometry;
 
-	break;
+            break;
 
         case ButtonPress:
             WindowManager::self()->setActiveClient(this);
@@ -175,9 +175,9 @@ void Client::resize(const QSize &size, int gravity)
         }
     }
 
-	XSetWindowAttributes a;
-	a.win_gravity = StaticGravity;
-	XChangeWindowAttributes(QX11Info::display(), _winId, CWWinGravity, &a);
+    XSetWindowAttributes a;
+    a.win_gravity = StaticGravity;
+    XChangeWindowAttributes(QX11Info::display(), _winId, CWWinGravity, &a);
 
     _decoration->setGeometry(x, y, size.width(), size.height());
 
@@ -228,16 +228,16 @@ void Client::updateTitle()
     unsigned char *data = NULL;
 
     if ((XGetWindowProperty(QX11Info::display(), _winId, ATOM(_NET_WM_NAME), 0, 1024,
-			    False, AnyPropertyType, &typeReturn,
-			    &formatReturn, &count, &unused, &data))
-	== Success && data)
+                            False, AnyPropertyType, &typeReturn,
+                            &formatReturn, &count, &unused, &data))
+        == Success && data)
     {    
         _title = QString::fromUtf8((char *)data);
         XFree(data);
     }
     else if (XFetchName(QX11Info::display(), _winId, &name) && name != NULL)
     {
-	_title = name;
+        _title = name;
         XFree(name);
     }
     else  // use class hints
@@ -245,7 +245,7 @@ void Client::updateTitle()
         XClassHint hint;
         if (XGetClassHint(QX11Info::display(), _winId, &hint))
         {
-	    _title = hint.res_name;
+            _title = hint.res_name;
             XFree(hint.res_name);
             XFree(hint.res_class);
         }

@@ -8,10 +8,10 @@
 #include <QDebug>
 #include <QX11Info>
 
-Q_GLOBAL_STATIC(WindowManager, windowManager)
+Q_GLOBAL_STATIC(WindowManager, windowManager);
 
-WindowManager::WindowManager():
-    QObject()
+WindowManager::WindowManager()
+    : QObject()
 {
 }
 
@@ -99,13 +99,13 @@ bool WindowManager::x11EventFilter(_XEvent *e)
 
     if (Client *c = findClient(e->xany.window))
     {
-	if (c->x11EventFilter(e))
-	    return true;
+        if (c->x11EventFilter(e))
+            return true;
     }
     else if (Client *c = findClientByDecorationWindow(e->xany.window))
     {
-	if (c->decoration()->x11EventFilter(e))
-	    return true;
+        if (c->decoration()->x11EventFilter(e))
+            return true;
     }
 
     return false;
@@ -115,14 +115,14 @@ void WindowManager::setActiveClient(Client *client)
 {
     foreach (Client *c, _clients)
     {
-    if (c == client)
-    {
-        XRaiseWindow(QX11Info::display(), client->decoration()->winId());
+        if (c == client)
+        {
+            XRaiseWindow(QX11Info::display(), client->decoration()->winId());
 
-	    c->setActive();
-    }
-	else
-	    c->setInactive();
+            c->setActive();
+        }
+        else
+            c->setInactive();
     }
 }
 
@@ -144,8 +144,8 @@ Client *WindowManager::findClientByDecorationWindow(Qt::HANDLE winId) const
 {
     foreach (Client *c, _clients)
     {
-	if (c->decoration()->winId() == winId)
-	    return c;
+        if (c->decoration()->winId() == winId)
+            return c;
     }
 
     return NULL;
