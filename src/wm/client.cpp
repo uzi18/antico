@@ -105,6 +105,26 @@ bool Client::x11EventFilter(_XEvent *e)
 
             break;
 
+        case ConfigureRequest:
+            if (e->xconfigurerequest.value_mask & (CWWidth | CWHeight | CWX | CWY))
+            {
+                QRect newGeometry = _geometry;
+
+                int mask = e->xconfigurerequest.value_mask;
+                if (mask & CWWidth)
+                    newGeometry.setWidth(e->xconfigurerequest.width);
+                if (mask & CWHeight)
+                    newGeometry.setHeight(e->xconfigurerequest.height);
+                if (mask & CWX)
+                    newGeometry.setX(e->xconfigurerequest.x);
+                if (mask & CWY)
+                    newGeometry.setY(e->xconfigurerequest.y);
+
+                _geometry = newGeometry;
+            }
+
+            break;
+
         case ButtonPress:
             WindowManager::self()->setActiveClient(this);
             // Replay the event...

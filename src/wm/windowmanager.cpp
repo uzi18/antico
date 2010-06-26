@@ -28,6 +28,7 @@ void WindowManager::init()
                  KeyPressMask | ColormapChangeMask |EnterWindowMask);
     XSync(QX11Info::display(), False);
 
+    // Some apps don't have a cursor
     XDefineCursor(QX11Info::display(), QX11Info::appRootWindow(), QCursor(Qt::ArrowCursor).handle());
 }
 
@@ -97,12 +98,12 @@ bool WindowManager::x11EventFilter(_XEvent *e)
         }
     }
 
-    if (Client *c = findClient(e->xany.window))
+    if (Client *c = findClient(eventWindow(e)))
     {
         if (c->x11EventFilter(e))
             return true;
     }
-    else if (Client *c = findClientByDecorationWindow(e->xany.window))
+    else if (Client *c = findClientByDecorationWindow(eventWindow(e)))
     {
         if (c->decoration()->x11EventFilter(e))
             return true;
@@ -133,6 +134,22 @@ bool WindowManager::compositeManagerIsRunning() const
                             False);
 
     return XGetSelectionOwner(QX11Info::display(), atom) != None;
+}
+
+Qt::HANDLE WindowManager::eventWindow(_XEvent *e) const
+{
+    Qt::HANDLE winId;
+
+    switch (e->type)
+    {
+        case ConfigureRequest:
+            winId = e->xconfigurerequest.window;
+            break;
+        default:
+            winId = e->xany.window;
+    }
+
+    return winId;
 }
 
 Client *WindowManager::createClient(Qt::HANDLE winId)

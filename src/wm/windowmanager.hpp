@@ -15,6 +15,8 @@ public:
 
     void init();
     bool x11EventFilter(_XEvent *e);
+
+    // Set the active client
     void setActiveClient(Client *client);
 
     bool compositeManagerIsRunning() const;
@@ -22,8 +24,14 @@ public:
     static WindowManager *self();
 
 private:
+    // Event window
+    Qt::HANDLE eventWindow(_XEvent *e) const;
+
+    // Create client
     Client *createClient(Qt::HANDLE winId);
+    // Find client by decoration window
     Client *findClientByDecorationWindow(Qt::HANDLE winId) const;
+    // Find client by window
     inline Client *findClient(Qt::HANDLE winId) { return _clients.value(winId); }
 
 private:
