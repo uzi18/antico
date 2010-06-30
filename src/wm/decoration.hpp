@@ -13,6 +13,20 @@ class Decoration: public QWidget
     Q_OBJECT
 
 public:
+    enum CursorPosition
+    {
+        NoneCursorPosition,
+        CenterCursorPosition,
+        TopCursorPosition,
+        BottomCursorPosition,
+        LeftCursorPosition,
+        RightCursorPosition,
+        TopLeftCursorPosition,
+        TopRightCursorPosition,
+        BottomLeftCursorPosition,
+        BottomRightCursorPosition
+    };
+
     Decoration(Client *c);
 
     virtual bool x11EventFilter(_XEvent *e);
@@ -31,7 +45,7 @@ protected:
     virtual void mouseReleaseEvent(QMouseEvent *e);
     virtual void mouseMoveEvent(QMouseEvent *e);
 
-    virtual int pointGravity(const QPoint &p);
+    virtual CursorPosition cursorPosition(const QPoint &p);
 
     inline QPoint moveOffset() const { return _moveOffset; }
     inline void setMoveOffset(const QPoint &p) { _moveOffset = p; }
@@ -40,7 +54,7 @@ private:
     Client *_client;
     QPoint _moveOffset;
     bool _hoverResizeArea;
-    int _resizeGravity;
+    CursorPosition _resizeCursorPosition;
     bool _active;
 };
 

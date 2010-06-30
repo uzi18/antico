@@ -12,7 +12,7 @@ Decoration::Decoration(Client *c)
     : QWidget()
     , _client(c)
     , _hoverResizeArea(false)
-    , _resizeGravity(ForgetGravity)
+    , _resizeCursorPosition(NoneCursorPosition)
 {
     setMouseTracking(true);
 }
@@ -27,15 +27,15 @@ void Decoration::mousePressEvent(QMouseEvent *e)
     WindowManager::self()->setActiveClient(client());
 
     setMoveOffset(e->pos());
-    _resizeGravity = pointGravity(e->pos());
+    _resizeCursorPosition = cursorPosition(e->pos());
 }
 
 void Decoration::mouseReleaseEvent(QMouseEvent *e)
 {
     setMoveOffset(QPoint(0, 0)); // Clear offset
-    _resizeGravity = ForgetGravity;
+    _resizeCursorPosition = NoneCursorPosition;
 
-    if (pointGravity(e->pos()) == ForgetGravity)
+    if (cursorPosition(e->pos()) == NoneCursorPosition)
     {
         QApplication::setOverrideCursor(Qt::ArrowCursor);
     }
@@ -58,7 +58,7 @@ void Decoration::mouseMoveEvent(QMouseEvent *e)
             int width = rect.width();
             int height = rect.height();
 
-            switch (_resizeGravity)
+/*            switch (_resizeGravity)
             {
                 case NorthGravity:
                     height = rect.height() - pos.y();
@@ -98,7 +98,7 @@ void Decoration::mouseMoveEvent(QMouseEvent *e)
                     break;
             }
 
-            client()->resize(QSize(width, height), _resizeGravity);
+            client()->resize(QSize(width, height), _resizeGravity);*/
         }
     }
     else
@@ -106,25 +106,25 @@ void Decoration::mouseMoveEvent(QMouseEvent *e)
         // Always assumes that the pointer is over an resizable area
         _hoverResizeArea = true;
 
-        switch (pointGravity(e->pos()))
+        switch (cursorPosition(e->pos()))
         {
-            case NorthGravity:
-            case SouthGravity:
+            case TopCursorPosition:
+            case BottomCursorPosition:
                 QApplication::setOverrideCursor(Qt::SizeVerCursor);
                 break;
 
-            case WestGravity:
-            case EastGravity:
+            case LeftCursorPosition:
+            case RightCursorPosition:
                 QApplication::setOverrideCursor(Qt::SizeHorCursor);
                 break;
 
-            case NorthWestGravity:
-            case SouthEastGravity:
+            case TopLeftCursorPosition:
+            case BottomRightCursorPosition:
                 QApplication::setOverrideCursor(Qt::SizeFDiagCursor);
                 break;
 
-            case NorthEastGravity:
-            case SouthWestGravity:
+            case TopRightCursorPosition:
+            case BottomLeftCursorPosition:
                 QApplication::setOverrideCursor(Qt::SizeBDiagCursor);
                 break;
 
@@ -135,50 +135,44 @@ void Decoration::mouseMoveEvent(QMouseEvent *e)
     }
 }
 
-int Decoration::pointGravity(const QPoint &p)
+Decoration::CursorPosition Decoration::cursorPosition(const QPoint &p)
 {
+    const int expand = 10; // TODO: Move this to BorderSize class
+
     BorderSize border = borderSize();
-    QRect rect = client()->geometry();
+    QSize size = QWidget::size();
 
-    // top-left
-    if (p.x() <= border.left() + 10 && p.y() <= border.top() + 10)
+    if (p.x() >= size.width() || p.y() >= size.height())
+        return NoneCursorPosition;
+
+    if (p.x() < border.left())
     {
-        return NorthWestGravity;
-    }
-    // top-right
-    else if(p.x() >= (rect.width() + border.measuredWidth()) - 10 &&
-            p.y() <= border.top() + 10)
-    {
-        return NorthEastGravity;
-    }
-    // bottom-left
-    else if(p.x() <= border.left() + 10 &&
-            p.y() >= (rect.height() + border.measuredHeight()) - border.bottom() - 10)
-    {
-        return SouthWestGravity;
-    }
-    // bottom-right
-    else if(p.x() >= (rect.width() + border.measuredWidth()) - 10 &&
-            p.y() >= (rect.height() + border.measuredHeight()) - border.bottom() - 10)
-    {
-        return SouthEastGravity;
-    }
-    else if (p.y() <= border.top() + 10)
-    {
-        return NorthGravity;
-    }
-    else if (p.y() >= (rect.height() + border.measuredHeight()) - border.bottom() - 10)
-    {
-        return SouthGravity;
-    }
-    else if (p.x() <= border.left() + 10)
-    {
-        return WestGravity;
-    }
-    else if (p.x() >= (rect.width() + border.measuredWidth()) - 10)
-    {
-        return EastGravity;
+        if (p.y() < (border.top() + expand)) return TopLeftCursorPosition;
+        if (p.y() >= (size.height() - border.left() - expand)) return BottomLeftCursorPosition;
+        return LeftCursorPosition;
     }
 
-    return ForgetGravity;
+    if (p.x() < (border.left() + expand))
+    {
+        if (p.y() < border.top()) return TopLeftCursorPosition;
+        if (p.y() >= (size.height() - border.bottom())) return BottomLeftCursorPosition;
+    }
+
+    if (p.x() >= (size.width() - border.right() - expand))
+    {
+        if (p.y() < border.top()) return TopRightCursorPosition;
+        if (p.y() >= (size.height() - border.bottom())) return BottomRightCursorPosition;
+    }
+
+    if (p.x() >= (size.width() - border.left()))
+    {
+        if (p.y() < (border.top() + expand)) return TopRightCursorPosition;
+        if (p.y() >= (size.height() - border.left() - expand)) return BottomRightCursorPosition;
+        return RightCursorPosition;
+    }
+
+    if (p.y() < border.top()) return TopCursorPosition;
+    if (p.y() >= size.height() - border.bottom()) return BottomCursorPosition;
+
+    return CenterCursorPosition;
 }
