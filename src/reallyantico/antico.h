@@ -42,6 +42,7 @@ public:
     void raise_next_frame();
     void set_active_frame(Frame *);
     void send_configurenotify(Frame *);
+    void wm_shutdown();
     void wm_refresh();
     void set_settings();
     void run_app_at_startup();

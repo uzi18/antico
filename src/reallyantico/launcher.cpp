@@ -41,6 +41,7 @@ void Launcher::read_settings()
     QSettings *style = new QSettings(stl_path + stl_name, QSettings::IniFormat, this);
     style->beginGroup("Launcher");
     launcher_pix = stl_path + style->value("launcher_pix").toString();
+    shutdown_pix = stl_path + style->value("shutdown_pix").toString();
     refresh_pix = stl_path + style->value("refresh_pix").toString();
     style->endGroup(); // Launcher
     style->beginGroup("Dockbar");
@@ -54,12 +55,16 @@ void Launcher::init()
     main_menu = new QMenu(this);
     connect(main_menu, SIGNAL(triggered(QAction *)), this, SLOT(run_command(QAction *))); // Quit, Run, Refresh, Manager
 
+    shutdown = new QAction(tr("Shutdown PC"), this);
     refresh = new QAction(tr("Refresh WM"), this);
 
+    shutdown->setIcon(QIcon(shutdown_pix));
     refresh->setIcon(QIcon(refresh_pix));
 
+    shutdown->setData("shutdown");
     refresh->setData("refresh");
         
+    shutdown->setShortcut(QKeySequence(Qt::ALT + Qt::Key_S));
     refresh->setShortcut(QKeySequence(Qt::ALT + Qt::Key_U));
     
     // add Category menu on Launcher
@@ -70,6 +75,7 @@ void Launcher::init()
     }
     
     main_menu->addSeparator();
+    main_menu->addAction(shutdown);
     main_menu->addAction(refresh);
 }
 
@@ -77,6 +83,8 @@ void Launcher::run_command(QAction *act)
 {
     QString cmd = act->data().toString();
 
+    if (cmd == "shutdown")
+        app->wm_shutdown();
     if (cmd == "refresh")
         app->wm_refresh();
 }
@@ -112,6 +120,7 @@ void Launcher::update_style()
 {
     read_settings();
     setPixmap(QPixmap(launcher_pix).scaled(dock_height-5, dock_height-5, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    shutdown->setIcon(QIcon(shutdown_pix));
     refresh->setIcon(QIcon(refresh_pix));
     app->get_category_menu()->update_menu(); // update .desktop/user menu entry
     app->get_category_menu()->update_style(); // update category menu pixmap
