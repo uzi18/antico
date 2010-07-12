@@ -773,7 +773,7 @@ void Antico::wm_refresh()
     }
 
     XSync(QX11Info::display(), FALSE);
-    flush();
+    //flush();
 }
 
 void Antico::wm_quit()
@@ -792,7 +792,6 @@ void Antico::wm_quit()
     QProcess::startDetached(QString("/bin/rm").append(" ").append(QDir::tempPath() + "/antico-runner.log"));
     qDebug() << "Quit Antico WM ...";
     XCloseDisplay(QX11Info::display());
-    emit lastWindowClosed();
 }
 
 void Antico::wm_shutdown()
@@ -815,7 +814,6 @@ void Antico::wm_shutdown()
     QProcess::startDetached(QString("/bin/rm").append(" ").append(QDir::tempPath() + "/antico-runner.log"));
     qDebug() << "Quit Antico WM ...";
     XCloseDisplay(QX11Info::display());
-    emit lastWindowClosed();
 }
 
 void Antico::wm_restart()
@@ -840,7 +838,6 @@ void Antico::wm_restart()
     QProcess::startDetached(QString("/bin/rm").append(" ").append(QDir::tempPath() + "/antico-runner.log"));
     qDebug() << "Quit Antico WM ...";
     XCloseDisplay(QX11Info::display());
-    emit lastWindowClosed();
 }
 
 void Antico::show_desktop()
@@ -856,7 +853,7 @@ void Antico::show_desktop()
         }
     }
     XSync(QX11Info::display(), FALSE);
-    flush();
+    //flush();
 }
 
 void Antico::run_app_at_startup()
